@@ -4,14 +4,7 @@
 let player;
 let enemy;
 let cursors;
-let background;
-let background2;
-let spaceBar;
-const bullets = [];
-let contBullets = 0;
-let frame = -1;
-let enemyX;
-let enemyY;
+
 /**
  * It prelaods all the assets required in the game.
  */
@@ -26,9 +19,7 @@ function preload() {
  */
 function create() {
   // scene background
-  background = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 , "sky");
-  background2 = this.add.image(SCREEN_WIDTH / 2, (SCREEN_HEIGHT/ 2 - 1024), "sky")
- 
+  this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "sky");
 
   // playet setup
   player = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "player");
@@ -39,15 +30,12 @@ function create() {
 
   // enemy setup
   enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy");
-  enemyX = enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
-  enemyY = enemy.setY((enemy.height * ENEMY_SCALE) / 2);
+  enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
+  enemy.setY((enemy.height * ENEMY_SCALE) / 2);
   enemy.setScale(ENEMY_SCALE);
 
   //cursors map into game engine
   cursors = this.input.keyboard.createCursorKeys();
-
-  // map space key status
-  spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 }
 
 /**
@@ -55,55 +43,7 @@ function create() {
  */
 function update() {
   
-moverPlayer()
-moverFondo()
- if(frame < 0){
- disparar(this)
- }
- 
- if(contBullets > 0){
-  moverBala()
- }
- frame -- 
-
- impactoBala()
-}
-
-function moverBala(){
-  for(b of bullets){
-    b.setY(b.y - 1)
-    if(b.y < 0 ){
-      b.destroy()
-    }}
-}
-
-function impactoBala(){ 
-  for(b of bullets){
-    if(b.x == enemyX && b.y == enemyY){
-      enemy.destroy()
-    }
-  }
-}
-
-function disparar(engine){
-  if(spaceBar.isDown){
-    bullets.push(engine.add.ellipse(player.x, player.y - player.height / 2 * PLAYER_SCALE - 5 ,4,4,0xFfff00))
-    contBullets ++
-    frame = 25
-  }
-}
-function moverFondo(){
-  background.setY(background.y + BACKGROUND_VELOCITY)
-  background2.setY(background2.y + BACKGROUND_VELOCITY)
-
-  if(background.y > background.height + SCREEN_HEIGHT / 2) //1324PX
-  {
-    background.setY(background2.y - background.height)
-  }
-
-  let temporal = background
-  background = background2
-  background2 = temporal
+function moverPlayer()
 }
 
 function moverPlayer(){
