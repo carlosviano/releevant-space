@@ -12,6 +12,10 @@ let contBullets = 0;
 let frame = -1;
 let enemyX;
 let enemyY;
+let scoreText;
+let score = 0;
+let contador = -1;
+
 /**
  * It prelaods all the assets required in the game.
  */
@@ -39,8 +43,8 @@ function create() {
 
   // enemy setup
   enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy");
-  enemyX = enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
-  enemyY = enemy.setY((enemy.height * ENEMY_SCALE) / 2);
+  enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
+  enemy.setY((enemy.height * ENEMY_SCALE) / 2);
   enemy.setScale(ENEMY_SCALE);
 
   //cursors map into game engine
@@ -48,15 +52,26 @@ function create() {
 
   // map space key status
   spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+  
+ scoreText = this.add.text(5, 5, `Score:${score}`, {
+  font: "24px Helvetica Sans",
+  fill: "#0095DD",
+});
+
 }
 
 /**
  * Updates each game object of the scene.
+ * 
  */
+ //Texto Score
+
 function update() {
   
 moverPlayer()
 moverFondo()
+
  if(frame < 0){
  disparar(this)
  }
@@ -64,31 +79,45 @@ moverFondo()
  if(contBullets > 0){
   moverBala()
  }
- frame -- 
+ frame -- ;
+ contador --;
 
- impactoBala()
+}
+
+function puntuacion(){
+  contador = 11
+  score += 1
+  scoreText.setText("Score: " + score)
 }
 
 function moverBala(){
   for(b of bullets){
-    b.setY(b.y - 1)
+    b.setY(b.y - BULLET_VELOCITY)
     if(b.y < 0 ){
       b.destroy()
-    }}
+    };
+
+    collision(b)
+  };
 }
 
-function impactoBala(){ 
-  for(b of bullets){
-    if(b.x == enemyX && b.y == enemyY){
-      enemy.destroy()
+
+function collision(bala){
+
+  if((bala.x>=enemy.x-(enemy.width*ENEMY_SCALE)/2 && bala.x<=enemy.x+(enemy.width*ENEMY_SCALE)/2)&&
+  (bala.y>=enemy.y-(enemy.height*ENEMY_SCALE)/2 && bala.y<=enemy.y+(enemy.height*ENEMY_SCALE)/2)){
+    if(contador < 0){
+      puntuacion()
     }
+    enemy.setX(Math.random()*(SCREEN_WIDTH - enemy.width) + enemy.width/2)
+    bala.destroy()
   }
 }
 
 function disparar(engine){
   if(spaceBar.isDown){
     bullets.push(engine.add.ellipse(player.x, player.y - player.height / 2 * PLAYER_SCALE - 5 ,4,4,0xFfff00))
-    contBullets ++
+    contBullets++
     frame = 25
   }
 }
