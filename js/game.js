@@ -26,6 +26,7 @@ function create() {
   player.setX((SCREEN_WIDTH - player.width * PLAYER_SCALE) / 2);
   player.setY(SCREEN_HEIGHT - (player.height * PLAYER_SCALE) / 2);
   player.setScale(PLAYER_SCALE);
+ 
 
   // enemy setup
   enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy");
@@ -41,6 +42,33 @@ function create() {
  * Updates each game object of the scene.
  */
 function update() {
-  if (cursors.left.isDown) {
+  
+function moverPlayer()
+}
+
+function moverPlayer(){
+  if (cursors.left.isDown && player.x !== 0) {
+
+    player.setX(player.x - PLAYER_VELOCITY)
+    if(player.x < (player.width / 2) * PLAYER_SCALE){
+      player.x = player.width / 2 * PLAYER_SCALE;
+    }
+
+  } else if (cursors.right.isDown){
+    
+    player.setX(player.x + PLAYER_VELOCITY)
+    if(player.x > SCREEN_WIDTH - (player.width / 2) * PLAYER_SCALE){
+      player.x = SCREEN_WIDTH -(player.width / 2 * PLAYER_SCALE)}}
+
+  if(cursors.up.isDown ){
+
+    player.setY(player.y - PLAYER_VELOCITY)
+    if(player.y < (player.height / 2) * PLAYER_SCALE){
+      player.y = player.height / 2 * PLAYER_SCALE}
+
+  } else if(cursors.down.isDown){
+    player.setY(player.y + PLAYER_VELOCITY)
+    if(player.y > SCREEN_HEIGHT - (player.height / 2) * PLAYER_SCALE){
+      player.y = SCREEN_HEIGHT - (player.height / 2 * PLAYER_SCALE)}
   }
 }
