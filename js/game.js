@@ -15,6 +15,8 @@ let enemyY;
 let scoreText;
 let score = 0;
 let contador = -1;
+let enemies = []
+let tiempo = 0;
 
 /**
  * It prelaods all the assets required in the game.
@@ -42,11 +44,7 @@ function create() {
  
 
   // enemy setup
-  enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy");
-  enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
-  enemy.setY((enemy.height * ENEMY_SCALE) / 2);
-  enemy.setScale(ENEMY_SCALE);
-
+  spawnEnemy(this)
   //cursors map into game engine
   cursors = this.input.keyboard.createCursorKeys();
 
@@ -68,10 +66,14 @@ function create() {
  //Texto Score
 
 function update() {
-  
 moverPlayer()
 moverFondo()
-
+console.log(tiempo)
+tiempo++ ;
+if(tiempo > 1500){
+  spawnEnemy(this)
+  tiempo = 0;
+}
  if(frame < 0){
  disparar(this)
  }
@@ -80,9 +82,27 @@ moverFondo()
   moverBala()
  }
  frame -- ;
- contador --;
+ contador --;   
 
 }
+
+//Funciones enemigo
+
+function spawnEnemy(engine){
+  for(i = -2; i < 2; i++){
+    enemy = engine.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy");
+    enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE + i * enemy.width) / 2);
+    enemy.setY((enemy.height * ENEMY_SCALE) / 2);
+    enemy.setScale(ENEMY_SCALE);
+    enemies.push(enemy)
+  }
+}
+
+function moverEnemigos(){
+  
+}
+
+//puntuacion
 
 function puntuacion(){
   contador = 11
@@ -91,26 +111,34 @@ function puntuacion(){
 }
 
 function moverBala(){
-  for(b of bullets){
-    b.setY(b.y - BULLET_VELOCITY)
-    if(b.y < 0 ){
-      b.destroy()
+  let index = -1;
+  for(let i = 0; i < bullets.length; i++){
+    bullets[i].setY(bullets[i].y - BULLET_VELOCITY)
+    if(bullets[i].y < 0 ){
+      bullets[i].destroy()
+      index = i
     };
-
-    collision(b)
+    collision(bullets[i],enemies)
   };
+  if(index >= 0 ){
+    bullets.splice(index, 1)
+  }
 }
 
 
-function collision(bala){
-
-  if((bala.x>=enemy.x-(enemy.width*ENEMY_SCALE)/2 && bala.x<=enemy.x+(enemy.width*ENEMY_SCALE)/2)&&
-  (bala.y>=enemy.y-(enemy.height*ENEMY_SCALE)/2 && bala.y<=enemy.y+(enemy.height*ENEMY_SCALE)/2)){
-    if(contador < 0){
-      puntuacion()
+function collision(bala,enemies){
+  let index = 0; 
+  while(index < enemies.length){
+    if((bala.x>=enemies[index].x-(enemies[index].width*ENEMY_SCALE)/2 && bala.x<=enemies[index].x+(enemies[index].width*ENEMY_SCALE)/2)&&
+    (bala.y>=enemies[index].y-(enemies[index].height*ENEMY_SCALE)/2 && bala.y<=enemies[index].y+(enemies[index].height*ENEMY_SCALE)/2)){
+      if(contador < 0){
+        puntuacion()
+      }
+      enemies[index].destroy()
+      enemies.splice(index,1)
+      bala.destroy()
     }
-    enemy.setX(Math.random()*(SCREEN_WIDTH - enemy.width) + enemy.width/2)
-    bala.destroy()
+    index ++
   }
 }
 
