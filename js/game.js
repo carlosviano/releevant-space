@@ -53,7 +53,6 @@ function create() {
 
   
  scoreText = this.add.text(5, 5, `Score:${score}`, {
-  font: "24px Helvetica Sans",
   fill: "#0095DD",
 });
 
@@ -70,7 +69,7 @@ moverPlayer()
 moverFondo()
 console.log(tiempo)
 tiempo++ ;
-if(tiempo > 1500){
+if(tiempo > 800){
   spawnEnemy(this)
   tiempo = 0;
 }
