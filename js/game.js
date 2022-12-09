@@ -16,7 +16,12 @@ let scoreText;
 let score = 0;
 let contador = -1;
 let enemies = []
+let livesText;
 let tiempo = 0;
+let lives = 3;
+let pause = false;
+let gameOverBackground;
+let shotSound;
 
 /**
  * It prelaods all the assets required in the game.
@@ -25,6 +30,9 @@ function preload() {
   this.load.image("sky", "assets/backgrounds/blue.png");
   this.load.image("player", "assets/characters/player.png");
   this.load.image("enemy", "assets/characters/alien1.png");
+  this.load.image("gameOver","assets/backgrounds/gameover.png");
+  // this.load.audio("background",)
+  this.load.audio("shooting","assets/soundEffects/shot.wav")
 }
 
 /**
@@ -34,7 +42,9 @@ function create() {
   // scene background
   background = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 , "sky");
   background2 = this.add.image(SCREEN_WIDTH / 2, (SCREEN_HEIGHT/ 2 - 1024), "sky")
- 
+
+  gameOverBackground = this.add.image(SCREEN_WIDTH/2, SCREEN_HEIGHT *-2, "gameOver")
+  shotSound = this.sound.add("shooting")
 
   // playet setup
   player = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "player");
@@ -53,10 +63,13 @@ function create() {
 
   
  scoreText = this.add.text(5, 5, `Score:${score}`, {
-  font: "24px Helvetica Sans",
-  fill: "#0095DD",
+  fill: "#FFFFFF",
 });
 
+livesText = this.add.text(5,5, `Vidas: ${lives}`,{
+  fill: "#FFFFFF"
+});
+livesText.setY(SCREEN_HEIGHT - livesText.height)
 }
 
 /**
@@ -66,12 +79,19 @@ function create() {
  //Texto Score
 
 function update() {
+
+  if(lives < 1){
+    gameOver()
+    return
+   }
+
 moverPlayer()
 moverFondo()
-console.log(tiempo)
+console.log(ENEMY_VELOCITY)
 tiempo++ ;
-if(tiempo > 1500){
+if(tiempo > 1200){
   spawnEnemy(this)
+  ENEMY_VELOCITY += 0.1
   tiempo = 0;
 }
  if(frame < 0){
@@ -81,6 +101,9 @@ if(tiempo > 1500){
  if(contBullets > 0){
   moverBala()
  }
+ moverEnemigos();
+
+
  frame -- ;
  contador --;   
 
@@ -89,7 +112,7 @@ if(tiempo > 1500){
 //Funciones enemigo
 
 function spawnEnemy(engine){
-  for(i = -2; i < 2; i++){
+  for(i = -3; i < 2; i++){
     enemy = engine.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy");
     enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE + i * enemy.width) / 2);
     enemy.setY((enemy.height * ENEMY_SCALE) / 2);
@@ -99,15 +122,39 @@ function spawnEnemy(engine){
 }
 
 function moverEnemigos(){
-  
+  let index = -1;
+  for(let i= 0; i < enemies.length ; i++){ 
+    enemies[i].setY(enemies[i].y + ENEMY_VELOCITY)
+    if(enemies[i].y > SCREEN_HEIGHT){
+      enemies[i].destroy()
+      index = i
+    };
+  }
+  if(index >= 0){
+    enemies.splice(index,1)
+    quitarVidas()
+  }
 }
 
-//puntuacion
+//Puntuacion y vidas
 
 function puntuacion(){
   contador = 11
   score += 1
   scoreText.setText("Score: " + score)
+}
+
+function quitarVidas(){
+  contador = 11;
+  lives -= 1;
+  livesText.setText("Vidas: " + lives)
+}
+
+//Game Over
+
+function gameOver(){
+  gameOverBackground.setY(SCREEN_HEIGHT / 2)
+  gameOverBackground.setX(SCREEN_WIDTH / 2)
 }
 
 function moverBala(){
@@ -144,6 +191,7 @@ function collision(bala,enemies){
 
 function disparar(engine){
   if(spaceBar.isDown){
+    shotSound.play();
     bullets.push(engine.add.ellipse(player.x, player.y - player.height / 2 * PLAYER_SCALE - 5 ,4,4,0xFfff00))
     contBullets++
     frame = 25
